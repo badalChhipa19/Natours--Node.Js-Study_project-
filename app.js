@@ -6,17 +6,6 @@ const app = express();
 //! Middleware -> To add data we need to add a middleware in express
 app.use(express.json());
 
-// TODO 7 - 8: Creating middleware // To create your own middleware in express we use app.use with 3 parameters 1st req, 2dn res and 3rd and most importent is next, because without next we can not proceed in excution further // This middleware is working because it is above or before all the responses that we are throwing in Step 6.2 if it putted after tem it won't work as response will already be sended.
-// app.use((req, res, next) => {
-//   console.log('Hello fom middleware...👋👋');
-//   next();
-// });
-
-// app.use((req, _, next) => {
-//   req.requestedAt = new Date().toISOString();
-//   next();
-// });
-
 //TODO 8: 3rd tarty middleware // Morgan middleware use to log details about req or res.
 app.use(morgan('dev'));
 
@@ -135,36 +124,21 @@ const deleteUser = (req, res) => {
   });
 };
 
-//! TODO 6.1: Declerative way of routing
-// //TODO 1: Read Data form server
-// app.get('/api/v1/tours', getAllTours);
-// //TODO 2: Add data on The server
-// app.post('/api/v1/tours', addNewTour);
-// //TODO 3: Get tour with perticular id(Using param/URL) If params are optional then use ? => :X?
-// app.get('/api/v1/tours/:id', getTour);
-// //TODO 4: Update tour domy
-// app.patch('/api/v1/tours/:id', updateTour);
-// //TODO 5: Delete tour domy
-// app.delete('/api/v1/tours/:id', deleteToru);
-
-//TODO: 6.2: More declerative way of routing : We can chain as many method as we want
-
 //TODO 10: Using Router mounting to Define Routers
 
-app.route('/api/v1/tours').get(getAllTours).post(addNewTour);
-app
-  .route('/api/v1/tours/:id')
-  .get(getTour)
-  .patch(updateTour)
-  .delete(deleteToru);
+const tourRouter = express.Router();
+const userRouter = express.Router();
+
+tourRouter.route('/').get(getAllTours).post(addNewTour);
+tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteToru);
 
 //TODO 9: Create users route
-app.route('/api/v1/users').get(getAllUsers).post(createUsers);
-app
-  .route('/api/v1/users/:id')
-  .get(getUser)
-  .patch(updateUser)
-  .delete(deleteUser);
+userRouter.route('/').get(getAllUsers).post(createUsers);
+userRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
+
+//TODO 10.1:
+app.use('/api/v1/tours', toursRouter);
+app.use('/api/v1/users', usersRouter);
 
 //TODO N:  Running the server on port 3000
 const port = 3000;
@@ -173,20 +147,3 @@ app.listen(port, () => {
 });
 
 //! *********************************************************************************************//
-
-//* Normal requst
-// app.get('/', (req, res) => {
-//   res.send('Hello from server side...');
-// });
-
-// //* Get requiest using json
-// app.get('/', (req, res) => {
-//   res
-//     .status(200)
-//     .json({ message: 'Hellow from server side...', app: 'Natours' });
-// });
-
-// //* Post requiest
-// app.post('/', (req, res) => {
-//   res.status(200).send('You can post to this endpoint...');
-// });
