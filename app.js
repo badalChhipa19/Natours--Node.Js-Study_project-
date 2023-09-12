@@ -8,11 +8,11 @@ const app = express();
 
 if (process.env.NODE_ENV === 'development') {
   //! Middleware -> To add data we need to add a middleware in express
-  app.use(express.json());
+  app.use(morgan('dev'));
 }
+app.use(express.json());
 
 //TODO 8: 3rd tarty middleware // Morgan middleware use to log details about req or res.
-app.use(morgan('dev'));
 
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
