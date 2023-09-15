@@ -3,7 +3,30 @@ const Tour = require(`./../model/tourModel`);
 //TODO: Handler fucntions for tours requiests
 exports.getAllTours = async (req, res) => {
   try {
-    const tour = await Tour.find({});
+    //Taking and filtering the params
+    const queryObj = Object.assign(req.query);
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    //* Appling advance filter where condition get filter i.e. gte -> $gte
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = JSON.parse(
+      queryStr.replace(/\b(gte|gt|lte|lt)\b/, (match) => `$${match}`),
+    );
+
+    //TODO: Take query from params
+    //* 1st:
+    const query = Tour.find(queryStr);
+    //*2st:
+    // const query = tour
+    //   .find()
+    //   .$where('difficulty')
+    //   .equal('easy')
+    //   .$where('duration')
+    //   .equal(5);
+
+    const tour = await query;
+
     res.status(200).json({
       status: 'success',
       results: tour.length,
@@ -14,7 +37,7 @@ exports.getAllTours = async (req, res) => {
   } catch (err) {
     res.status(400 /*Bad requiest error*/).json({
       status: 'fail',
-      message: 'Invalid data structure..',
+      message: err.message,
     });
   }
 };
